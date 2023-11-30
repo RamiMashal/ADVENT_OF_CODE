@@ -94,12 +94,12 @@ def check_is_touching(head_position:List[int], tail_position:List[int]) -> bool:
 
     if head_position[0] == tail_position[0] and abs(head_position[1] - tail_position[1]) == 1:
         # Uso abs() para ahorrarme comprobar quién está a la derecha o izquierda, mientras que la distancia no sea mayor que 1 posición.
-        print("Se tocan")
+        print("Se tocan, por tanto, la cola no se mueve.")
         return True
 
     if abs(head_position[0] - tail_position[0]) == 1 and (abs(head_position[1] - tail_position[1]) == 1 or head_position[1] == tail_position[1]):
         # Aquí, además de comprobar que la distancia a izquierda o derecha sea igual a 1, también hay que comprobar si están en la misma columna. Antes no porque, si están en la misma fila, no se pueden superponer, el ejercicio no lo contempla.
-        print("Se tocan")
+        print("Se tocan, por tanto, la cola no se mueve.")
         return True
 
     return False
@@ -147,8 +147,13 @@ for move_position in moves_positions_orders:
         matrix[head_position[0], head_position[1]] = 1
     
         if not check_is_touching(head_position, tail_position):
-            tail_position = [head_position[0] + 1, head_position[1]]
-            matrix[tail_position[0], tail_position[1]] = 2
+            for num in range(head_position[0] + 1, tail_position[0]):
+                # aHORA ENTIENDO QUE HAY QUE JUGAR CON LAS POSICIONES DE LA CABEZA Y COLA, ESTÁ MAL EL IF DE LA RIGHT, FUNCIONA PORQUE ES EL PRIMER MOVIMIENTO. ARREGLA ESO Y REPLICALO SEGÚN LAS CIRCUNSTANCIAS. COMO PUEDES VER, SI USAS LAS POSICIONES DE LA CABEZA O COLA, NO TENDRÁS EL PROBLEMA DEL MOVIMIENTO DIAGONAL. FIJATE QUE, EN EL UP, LA tail_position TOMA LAS POSICIONES DEL NUM Y LA CABEZA PARA LA COLUMNAS, POR LO QUE, INVOLUNTARIAMENTE, RESOLVEMOS LOS DIAGONALES.
+                # aDEMAS, SUMANDO UNO (EN EL CASO DE UP) PARA LAS POSICIONES DE FILA DE LA CABEZA NOS POSICIONAMOS DETRÁS DE LA MISMA SIN SOLAPARLA, COMO DEBE SER PARA NO CONTAR TAMPOCO ESA POSICIÓN.
+                tail_position = [num, head_position[1]]
+                matrix[tail_position[0], tail_position[1]] = 2
+
+                tail_positions.append(tail_position)
 
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')
