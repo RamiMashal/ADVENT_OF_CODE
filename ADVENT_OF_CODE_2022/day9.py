@@ -130,10 +130,11 @@ for move_position in moves_positions_orders:
         matrix[head_position[0], head_position[1]] = 1
 
         if not check_is_touching(head_position, tail_position):
-            tail_position = [head_position[0], head_position[1] + 1]
-            matrix[tail_position[0], tail_position[1]] = 2
+            for num in range(head_position[1] + 1, tail_position[1]):
+                tail_position = [head_position[0], num]
+                matrix[tail_position[0], tail_position[1]] = 2
 
-            tail_positions.append(tail_position)
+                tail_positions.append(tail_position)
 
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')

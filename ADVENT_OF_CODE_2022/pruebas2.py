@@ -7,5 +7,10 @@ lista.reverse()
 
 print(lista)
 
-for num in range(0, 1):
+for num in range(5, 0):
     print(num)
+
+num = list(range(1,10))
+print(num)
+num.reverse()
+print(num)
