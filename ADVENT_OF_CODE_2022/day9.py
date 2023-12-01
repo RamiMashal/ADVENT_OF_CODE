@@ -106,9 +106,7 @@ def check_is_touching(head_position:List[int], tail_position:List[int]) -> bool:
 
 #print(check_is_touching([2, 2], [1, 2])) # Para pruebas
 
-tail_positions = [
-    tail_position
-] # Creamos una lista (más tarde lidiaremos con los duplicados) donde almacenamos las posiciones de la lista. Incluimos la posición inicial.
+tail_positions = [] # Creamos una lista (más tarde lidiaremos con los duplicados) donde almacenamos las posiciones de la lista. Incluimos la posición inicial.
 
 for move_position in moves_positions_orders:
     if move_position[0] == "R":
@@ -116,7 +114,7 @@ for move_position in moves_positions_orders:
         matrix[head_position[0], head_position[1]] = 1 # Voy pintando las casillas de la cabeza (solo la posición final) como ayuda.
 
         if not check_is_touching(head_position, tail_position):
-            for num in range(1, head_position[1]):
+            for num in range(tail_position[1], head_position[1]):
                 tail_position = [head_position[0], num]
                 matrix[tail_position[0], tail_position[1]] = 2 # Voy pintando TODAS las posiciones de la cola. Solo como ayuda.
 
