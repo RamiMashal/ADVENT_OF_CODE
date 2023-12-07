@@ -58,7 +58,7 @@ print(moves_positions_orders)
 
 #max_moves = max([int(el[1]) for el in moves_positions_orders]) # Hago un max de los movimientos para saber el shape de la matriz (Ejemplo: 5).
 
-max_moves = 100
+max_moves = 1000
 
 start_position = [round(max_moves / 2), round(max_moves / 2)] #start_position = [max_moves - 1, 0] # La cabeza y la cola empiezan superpuestas abajo a la izquierda. Restamos 1 al max_moves para que no se salga de rango, ya que, por ejemplo, en una matriz de (5,5) los índices van de 0 a 4.
 
@@ -126,8 +126,8 @@ for move_position in moves_positions_orders:
             
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')
-        print(tail_positions)
-        print(matrix)
+        #print(tail_positions)
+        #print(matrix)
     
     elif move_position[0] == "L":
         head_position = [head_position[0], head_position[1] - int(move_position[1])]
@@ -144,8 +144,8 @@ for move_position in moves_positions_orders:
 
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')
-        print(tail_positions)
-        print(matrix)
+        #print(tail_positions)
+        #print(matrix)
     
     elif move_position[0] == "U":
         head_position = [head_position[0] - int(move_position[1]), head_position[1]] # RECUERDA que subir es restar a las posiciones de las rows!
@@ -162,8 +162,8 @@ for move_position in moves_positions_orders:
 
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')
-        print(tail_positions)
-        print(matrix)
+        #print(tail_positions)
+        #print(matrix)
     
     elif move_position[0] == "D":
         head_position = [head_position[0] + int(move_position[1]), head_position[1]] # RECUERDA que bajar es sumar a las posiciones de las rows!
@@ -178,8 +178,8 @@ for move_position in moves_positions_orders:
 
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')
-        print(tail_positions)
-        print(matrix)
+        #print(tail_positions)
+        #print(matrix)
 
 print(f'La respuesta a la primera pregunta es: {len(set(tail_positions))}') # Los convertimos a set() para que nos quite posiciones duplicadas.
 
