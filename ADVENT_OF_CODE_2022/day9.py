@@ -44,39 +44,37 @@ IDEAS
 """
 
 from typing import List, Tuple
+import math
 import numpy as np
 
 ################################# Procesando el fichero para obtener los movimientos y el número de posiciones.
 # Así mismo, establecemos la posición inicial, en la que empiecan cabeza y cola.
 
-with open("day9_test.txt", "r") as file:
+with open("day9.txt", "r") as file:
 
     moves_positions_orders = [tuple(el.strip().split(" ")) for el in file.readlines()]
 
 print(moves_positions_orders)
 
-max_moves = max([int(el[1]) for el in moves_positions_orders]) # Hago un max de los movimientos para saber el shape de la matriz (Ejemplo: 5).
+#max_moves = max([int(el[1]) for el in moves_positions_orders]) # Hago un max de los movimientos para saber el shape de la matriz (Ejemplo: 5).
 
-start_position = [max_moves - 1, 0] # La cabeza y la cola empiezan superpuestas abajo a la izquierda. Restamos 1 al max_moves para que no se salga de rango, ya que, por ejemplo, en una matriz de (5,5) los índices van de 0 a 4.
+max_moves = 100
+
+start_position = [round(max_moves / 2), round(max_moves / 2)] #start_position = [max_moves - 1, 0] # La cabeza y la cola empiezan superpuestas abajo a la izquierda. Restamos 1 al max_moves para que no se salga de rango, ya que, por ejemplo, en una matriz de (5,5) los índices van de 0 a 4.
 
 # RECUERDA QUE SI HACES LA MATRIZ MÁS GRANDE TENDRAS QUE ADAPTAR LA STARTING POSITION DE CABEZA Y COLA, ESE DECIR, QUE NO DEPENDEN DEL MAX_MOVES.
 
 print(f'start_position: {start_position}\n')
 
-head_position = start_position
-
-tail_position = start_position
-
 ################################# Creamos una matriz de ceros y creamos una lista de índices de las posiciones de la misma
 # La dimensión filas y columnas de la matriz será el máximo número del input.
 # Reutilizo el código del ejercicio day8, sin crear la lista_posiciones, ya que no nos hace falta.
-start_position = [4, 0]
 
 head_position = start_position
 
 tail_position = start_position
 
-matrix = np.zeros((5, 6))#np.random.randint(10, size=(max_moves, max_moves)) #  Utilizo una matriz de random ints al principio para facilitar trackear las posiciones haciendo pruebas. Cuando funciones podría usar la matriz de ceros para convertir a 1 las posiciones por las que pasa la cola.
+matrix = np.zeros((max_moves + 1, max_moves + 1))#np.random.randint(10, size=(max_moves, max_moves)) #  Utilizo una matriz de random ints al principio para facilitar trackear las posiciones haciendo pruebas. Cuando funciones podría usar la matriz de ceros para convertir a 1 las posiciones por las que pasa la cola.
 
 matrix[start_position[0], start_position[1]] = 1 # Dejamos marcada la posición de inicio porque también cuenta como casilla que visita la cola.
 
@@ -92,13 +90,17 @@ matrix[start_position[0], start_position[1]] = 1 # Dejamos marcada la posición 
 def check_is_touching(head_position:List[int], tail_position:List[int]) -> bool:
     # Recuerda que esta función solo la tienes que aplicar en la parte de la cola, si no la cabeza también se parará.
 
+    if head_position == tail_position:
+        print("Se tocan, por tanto, la cola no se mueve.")
+        return True
+
     if head_position[0] == tail_position[0] and abs(head_position[1] - tail_position[1]) == 1:
         # Uso abs() para ahorrarme comprobar quién está a la derecha o izquierda, mientras que la distancia no sea mayor que 1 posición.
         print("Se tocan, por tanto, la cola no se mueve.")
         return True
 
     if abs(head_position[0] - tail_position[0]) == 1 and (abs(head_position[1] - tail_position[1]) == 1 or head_position[1] == tail_position[1]):
-        # Aquí, además de comprobar que la distancia a izquierda o derecha sea igual a 1, también hay que comprobar si están en la misma columna. Antes no porque, si están en la misma fila, no se pueden superponer, el ejercicio no lo contempla.
+        # Aquí, además de comprobar que la distancia a izquierda o derecha sea igual a 1, también hay que comprobar si están en la misma columna.
         print("Se tocan, por tanto, la cola no se mueve.")
         return True
 
@@ -106,7 +108,8 @@ def check_is_touching(head_position:List[int], tail_position:List[int]) -> bool:
 
 #print(check_is_touching([2, 2], [1, 2])) # Para pruebas
 
-tail_positions = [] # Creamos una lista (más tarde lidiaremos con los duplicados) donde almacenamos las posiciones de la lista. Incluimos la posición inicial.
+tail_positions = [tuple(start_position)] # Creamos una lista (más tarde lidiaremos con los duplicados) donde almacenamos las posiciones de la lista. Incluimos la posición inicial, ya que las 2 empiezan ahí solapadas y también se cuenta.
+# Convertimos las posiciones en tuplas porque el set(), que usamos para quitar posiciones duplicadas al final, solo funciona con una lista de tuplas. Si intentamos hacer un set con una lista de listas nos da TypeError: unhashable type: 'list'.
 
 for move_position in moves_positions_orders:
     if move_position[0] == "R":
@@ -114,11 +117,12 @@ for move_position in moves_positions_orders:
         matrix[head_position[0], head_position[1]] = 1 # Voy pintando las casillas de la cabeza (solo la posición final) como ayuda.
 
         if not check_is_touching(head_position, tail_position):
-            for num in range(tail_position[1], head_position[1]):
+            # Ten en cuenta que en la R y D empezamos el for por la tail, ya que izquierda y abajo es sumar.
+            for num in range(tail_position[1] + 1, head_position[1]):
                 tail_position = [head_position[0], num]
                 matrix[tail_position[0], tail_position[1]] = 2 # Voy pintando TODAS las posiciones de la cola. Solo como ayuda.
 
-                tail_positions.append(tail_position) # Añado cada posición por la que debe pasar la cola.
+                tail_positions.append(tuple(tail_position)) # Añado cada posición por la que debe pasar la cola.
             
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')
@@ -130,11 +134,13 @@ for move_position in moves_positions_orders:
         matrix[head_position[0], head_position[1]] = 1
 
         if not check_is_touching(head_position, tail_position):
-            for num in range(head_position[1] + 1, tail_position[1]):
+            # Hacemos reversed en todas menos en R, ya que si no el for nos da posiciones de 0 a n, pero necesitamos de n a 0, ya que en una matriz abajo es sumar, arriba es restar, etc. En la R  y D no hace falta porque la izquierda y abajo es sumar.
+            # Volvemos a convertir en list() porque el reversed devuelve un objeto.
+            for num in list(reversed(range(head_position[1] + 1, tail_position[1]))):
                 tail_position = [head_position[0], num]
                 matrix[tail_position[0], tail_position[1]] = 2
 
-                tail_positions.append(tail_position)
+                tail_positions.append(tuple(tail_position))
 
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')
@@ -146,13 +152,13 @@ for move_position in moves_positions_orders:
         matrix[head_position[0], head_position[1]] = 1
     
         if not check_is_touching(head_position, tail_position):
-            for num in range(head_position[0] + 1, tail_position[0]):
+            for num in list(reversed(range(head_position[0] + 1, tail_position[0]))):
                 # aHORA ENTIENDO QUE HAY QUE JUGAR CON LAS POSICIONES DE LA CABEZA Y COLA, ESTÁ MAL EL IF DE LA RIGHT, FUNCIONA PORQUE ES EL PRIMER MOVIMIENTO. ARREGLA ESO Y REPLICALO SEGÚN LAS CIRCUNSTANCIAS. COMO PUEDES VER, SI USAS LAS POSICIONES DE LA CABEZA O COLA, NO TENDRÁS EL PROBLEMA DEL MOVIMIENTO DIAGONAL. FIJATE QUE, EN EL UP, LA tail_position TOMA LAS POSICIONES DEL NUM Y LA CABEZA PARA LA COLUMNAS, POR LO QUE, INVOLUNTARIAMENTE, RESOLVEMOS LOS DIAGONALES.
                 # aDEMAS, SUMANDO UNO (EN EL CASO DE UP) PARA LAS POSICIONES DE FILA DE LA CABEZA NOS POSICIONAMOS DETRÁS DE LA MISMA SIN SOLAPARLA, COMO DEBE SER PARA NO CONTAR TAMPOCO ESA POSICIÓN.
                 tail_position = [num, head_position[1]]
                 matrix[tail_position[0], tail_position[1]] = 2
 
-                tail_positions.append(tail_position)
+                tail_positions.append(tuple(tail_position))
 
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')
@@ -164,13 +170,24 @@ for move_position in moves_positions_orders:
         matrix[head_position[0], head_position[1]] = 1
 
         if not check_is_touching(head_position, tail_position):
-            tail_position = [head_position[0] - 1, head_position[1]]
-            matrix[tail_position[0], tail_position[1]] = 2
+            for num in range(tail_position[0] + 1, head_position[0]):
+                tail_position = [num, head_position[1]]
+                matrix[tail_position[0], tail_position[1]] = 2
+
+                tail_positions.append(tuple(tail_position))
 
         print(f'HEAD: {head_position}, {move_position}')
         print(f'TAIL: {tail_position}, {move_position}')
         print(tail_positions)
         print(matrix)
+
+print(f'La respuesta a la primera pregunta es: {len(set(tail_positions))}') # Los convertimos a set() para que nos quite posiciones duplicadas.
+
+# CUIDADO PORQUE, AUNQUE LA L, R y U han funcionado:
+
+# Tendrás que decidir si incluir por defecto la posición inicial en la lista y sumar o restar 1 en el for de la R, ya que al principio empiezan en 4, 0 y te viene bien para que cuente esta posición y no tener que meter la posición inicial de la lista. Pero esto hará que falle a lo largo del camino. Simplemente podría usar después un quitar duplicados, pero mejor hacer limpio sea de una forma o de otra.
+
+# En el primer down no funciona la función check_is_touching. Estoy casi seguro de que es porque, aunque todo se pinte bien, las posisciones que va tomando la cola no son correctas, ya que hay que invertir los rangos en algunos casos. Busca la mejor forma de invertir los rangos para que la posición de la cola sea la correcta y calcule bien el siguiente movimiento.
 
 def move_right(current_position:List[List[int]]) -> List[List[int]]:
     """
@@ -240,6 +257,7 @@ MOVES_FUNCTIONS = {
     "D": move_down()
 }
 """
+""" COMENTARIOS ANTIGUOS.
 
 # LA CONCULSION POR LA QUE ME FALLA  (r, 4) desdpues del ('D', '1') es por que se me va de rango, porque yo entendí que hacer una matriz del max_moves era lo logico, lo di por sentado. El ejercicio menciona que hay que trazar en una matriz bidimensional, por lo que yo entendí que con un max_moves tengo el numero de col y rows. Pero, si no consigo entender el ejercicio, porque no especifica el rango de la matriz, hago una matriz lo enorme y hasta ta no me falle.
 
@@ -272,3 +290,4 @@ MOVES_FUNCTIONS = {
 
 # Has conseguido la primera parte para guardar las posiciones cde la cola en una lista. Para la izquierda será igual de fácil de la derecha, pero para el movimiento diagonal y arriba vas a necesitar tener en cuenta también las filas.
     # Como puedes ver, la diagonal va a ser más complicado, porque ahora te pinta más posiciones de las que son.
+"""
