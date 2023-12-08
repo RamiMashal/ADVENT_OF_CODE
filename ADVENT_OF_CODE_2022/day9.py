@@ -291,3 +291,5 @@ MOVES_FUNCTIONS = {
 # Has conseguido la primera parte para guardar las posiciones cde la cola en una lista. Para la izquierda será igual de fácil de la derecha, pero para el movimiento diagonal y arriba vas a necesitar tener en cuenta también las filas.
     # Como puedes ver, la diagonal va a ser más complicado, porque ahora te pinta más posiciones de las que son.
 """
+
+# Para la 2 parte vas a tener que usar recursividad por huevos. Sería algo muy bueno para aprender.
