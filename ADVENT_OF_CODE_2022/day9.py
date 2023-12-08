@@ -44,7 +44,6 @@ IDEAS
 """
 
 from typing import List, Tuple
-import math
 import numpy as np
 
 ################################# Procesando el fichero para obtener los movimientos y el número de posiciones.
@@ -108,7 +107,7 @@ def check_is_touching(head_position:List[int], tail_position:List[int]) -> bool:
 
 #print(check_is_touching([2, 2], [1, 2])) # Para pruebas
 
-tail_positions = [tuple(start_position)] # Creamos una lista (más tarde lidiaremos con los duplicados) donde almacenamos las posiciones de la lista. Incluimos la posición inicial, ya que las 2 empiezan ahí solapadas y también se cuenta.
+tail_positions = [tuple(start_position)] # Creamos una lista donde almacenamos las posiciones de la lista. Incluimos la posición inicial, ya que las 2 empiezan ahí solapadas y también se cuenta.
 # Convertimos las posiciones en tuplas porque el set(), que usamos para quitar posiciones duplicadas al final, solo funciona con una lista de tuplas. Si intentamos hacer un set con una lista de listas nos da TypeError: unhashable type: 'list'.
 
 for move_position in moves_positions_orders:
@@ -200,6 +199,9 @@ def move_right(current_position:List[List[int]]) -> List[List[int]]:
         List: new position = [row, column]
     """
     new_position = [current_position[0], current_position[1] + 1]
+
+     [head_position[0], head_position[1] + int(move_position[1])] # TEN EN CUENTA QUE UN FUTURO MAP YA LIDIARÍA CON CONVERTIR EN INT LAS POSICIONES. COMPLETA LA FUNCIÓN PENSANDO EN ESTO.
+        matrix[head_position[0], head_position[1]] = 1 # Voy pintando las casillas de la cabeza (solo la posición final) como ayuda.
 
     return new_position
 
